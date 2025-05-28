@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from collections import Counter
 from textblob import TextBlob
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 # Read the Excel file
 df = pd.read_excel('RespostasFormularioDesigualdade.xlsx')
@@ -33,14 +34,15 @@ for school_type, group_df in groups.items():
                     counts[kw] += 1
     results[school_type] = counts
 
-# Sentiment analysis for each group
+# Sentiment analysis for each group using Vader
+analyzer = SentimentIntensityAnalyzer()
 sentiment_results = {}
 for school_type, group_df in groups.items():
     sentiments = []
     for col in columns_to_analyze:
         for reply in group_df[col].dropna().astype(str):
-            blob = TextBlob(reply)
-            sentiments.append(blob.sentiment.polarity)
+            score = analyzer.polarity_scores(reply)['compound']
+            sentiments.append(score)
     if sentiments:
         avg_sentiment = sum(sentiments) / len(sentiments)
     else:
@@ -61,7 +63,8 @@ for idx, school_type in enumerate(['pública', 'particular']):
     ax.set_title(f'Frequência de Palavras-chave ({school_type.capitalize()})')
     ax.set_xlabel('Palavra-chave')
     ax.set_ylabel('Frequência')
-    ax.set_xticklabels(counts.keys(), rotation=45)
+    ax.set_xticks(range(len(counts)))
+    ax.set_xticklabels(list(counts.keys()), rotation=45)
     # Add value labels on top of each bar
     for bar in bars:
         height = bar.get_height()
