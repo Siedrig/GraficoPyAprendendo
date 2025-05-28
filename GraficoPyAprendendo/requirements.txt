@@ -1,0 +1,6 @@
+pandas
+matplotlib
+plotly
+textblob
+vaderSentiment
+openpyxl
