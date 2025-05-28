@@ -73,4 +73,3 @@ for idx, school_type in enumerate(['pública', 'particular']):
 plt.tight_layout()
 plt.show()
 
-git init
